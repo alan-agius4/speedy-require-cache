@@ -1,7 +1,6 @@
 import * as _ from "lodash";
 import * as nodeModule from "module";
 import { join } from "path";
-import { existsSync } from "fs";
 import { readJsonSync, writeJsonSync, ensureFileSync, removeSync } from "fs-extra";
 import { Dictionary, Logger, packageJson, fileSystem } from "@speedy/node-core";
 
@@ -32,7 +31,22 @@ export class RequireCache {
 	/** Start caching of the modules locations. */
 	start() {
 		nodeModule._resolveFilename = this.resolveFilenameOptimized;
-		this.loadCache();
+
+		let cacheFile: CacheFile;
+
+		try {
+			cacheFile = readJsonSync(this.OPTIONS.cacheFilePath) as CacheFile;
+		} catch (error) {
+			return;
+		}
+
+		if (!cacheFile ||
+			(_.isNumber(cacheFile.cacheKiller) && cacheFile.cacheKiller < new Date().getTime()) ||
+			(_.isString(cacheFile.cacheKiller) && cacheFile.cacheKiller !== this.OPTIONS.cacheKiller)) {
+			return;
+		}
+
+		this.filesLookUp = cacheFile.paths;
 	}
 
 	/** Stop caching of the modules locations. */
@@ -59,44 +73,25 @@ export class RequireCache {
 		const key = `${fileSystem.getCanonicalPath(parent.id)}:${path}`;
 		const cachedPath: string | undefined = this.filesLookUp[key];
 
-		if (cachedPath && existsSync(cachedPath)) {
+		if (cachedPath) {
 			this.stats.cacheHit++;
 			return cachedPath;
 		}
 
 		const filename = resolveFilenameOriginal.apply(nodeModule, arguments);
 		const uncachedPath = fileSystem.getCanonicalPath(filename);
-		this.stats.cacheMiss++;
 		this.filesLookUp[key] = uncachedPath;
+		this.stats.cacheMiss++;
 		this.scheduleSaveCache();
 		return uncachedPath;
 	}
-
 
 	private scheduleSaveCache() {
 		if (this.cacheTimerInstance) {
 			clearTimeout(this.cacheTimerInstance);
 		}
 
-		this.cacheTimerInstance = setTimeout(this.saveCache, 200);
-	}
-
-	private loadCache() {
-		let cachedFile: CacheFile;
-
-		try {
-			cachedFile = readJsonSync(this.OPTIONS.cacheFilePath) as CacheFile;
-		} catch (error) {
-			return;
-		}
-
-		if (!cachedFile ||
-			(_.isNumber(cachedFile.cacheKiller) && cachedFile.cacheKiller < new Date().getTime()) ||
-			(_.isString(cachedFile.cacheKiller) && cachedFile.cacheKiller !== this.OPTIONS.cacheKiller)) {
-			return;
-		}
-
-		this.filesLookUp = cachedFile.paths;
+		this.cacheTimerInstance = setTimeout(this.saveCache, 500);
 	}
 
 	private saveCache() {
