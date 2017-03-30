@@ -19,7 +19,7 @@ export interface CacheOptions {
 	 */
 	cacheKiller: number | string;
 
-	/** Cache file location */
+	/** Alternate cache file location. Default: `./.cache/speedy-require-cache.json` */
 	cacheFilePath: string;
 }
 

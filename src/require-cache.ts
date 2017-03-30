@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import * as nodeModule from "module";
-import { join } from "path";
+import { resolve } from "path";
 import { readJsonSync, writeJsonSync, ensureFileSync, removeSync } from "fs-extra";
 import { Dictionary, Logger, packageJson, fileSystem } from "@speedy/node-core";
 
@@ -19,7 +19,7 @@ export class RequireCache {
 	};
 	private OPTIONS: CacheOptions = {
 		cacheKiller: packageJson.getVersion(),
-		cacheFilePath: join(process.cwd(), "/.cache/cache-require-paths.json")
+		cacheFilePath: resolve("./.cache/speedy-require-cache.json")
 	};
 
 	constructor(
