@@ -17,7 +17,7 @@ export class RequireCache {
 	private stats: CacheStats = {
 		cacheHit: 0,
 		cacheMiss: 0
-	}
+	};
 	private OPTIONS: CacheOptions = {
 		cacheKiller: packageJson.getVersion(),
 		cacheFilePath: join(process.cwd(), "/.cache/cache-require-paths.json")
