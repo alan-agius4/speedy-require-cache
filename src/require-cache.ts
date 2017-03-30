@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import * as nodeModule from "module";
-import { relative, join } from "path";
+import { join } from "path";
 import { existsSync } from "fs";
 import { readJsonSync, writeJsonSync, ensureFileSync, removeSync } from "fs-extra";
 import { Dictionary, Logger, packageJson, fileSystem } from "@speedy/node-core";
@@ -107,7 +107,8 @@ export class RequireCache {
 
 		const { cacheHit, cacheMiss } = this.getStats();
 
-		logger.debug(this.saveCache.name, `Trying to saving cache, Path: ${this.OPTIONS.cacheFilePath}, cacheHit: ${cacheHit}, cacheMiss: ${cacheMiss}`);
+		logger.debug(this.saveCache.name,
+			`Trying to saving cache, Path: ${this.OPTIONS.cacheFilePath}, cacheHit: ${cacheHit}, cacheMiss: ${cacheMiss}`);
 		ensureFileSync(this.OPTIONS.cacheFilePath);
 		writeJsonSync(this.OPTIONS.cacheFilePath, cacheFile);
 		logger.debug(this.saveCache.name, `Saved cached successfully.`);

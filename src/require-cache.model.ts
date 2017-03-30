@@ -10,9 +10,11 @@ export interface CacheOptions {
 	/**
 	 * Used to invalidate the cache. By default it's set the version of `package.json`.
 	 *
-	 * Normally one will pass the application version number assuming that a different version or a Unix timestamp when the cache should expire.
+	 * Normally one will pass the application version number assuming that a different version
+	 * or a Unix timestamp when the cache should expire.
 	 *
-	 * string: `package.json` Version: `1.0.0`.
+	 * string: 'package.json' version: `1.0.0`.
+	 *
 	 * number: Unix timestamp: `1490873027`.
 	 */
 	cacheKiller: number | string;
