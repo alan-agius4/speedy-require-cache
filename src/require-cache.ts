@@ -1,21 +1,22 @@
 import * as _ from "lodash";
 import * as nodeModule from "module";
-import { resolve } from "path";
+import { resolve, relative } from "path";
 import { readJsonSync, writeJsonSync, ensureFileSync, removeSync } from "fs-extra";
-import { Dictionary, Logger, packageJson, fileSystem } from "@speedy/node-core";
+import { Dictionary, Logger, packageJson } from "@speedy/node-core";
 
 import { CacheOptions, CacheFile, CacheStats } from "./require-cache.model";
 
-const logger = new Logger("Require Cache");
-const resolveFilenameOriginal = nodeModule._resolveFilename;
-
 export class RequireCache {
 
+	private logger = new Logger("Require Cache");
+	private resolveFileNameOriginal = nodeModule._resolveFilename;
+	private cwd = process.cwd();
 	private filesLookUp: Dictionary<string> = {};
 	private cacheTimerInstance: NodeJS.Timer;
 	private stats: CacheStats = {
 		cacheHit: 0,
-		cacheMiss: 0
+		cacheMiss: 0,
+		notCached: 0
 	};
 	private OPTIONS: CacheOptions = {
 		cacheKiller: packageJson.getVersion(),
@@ -29,29 +30,30 @@ export class RequireCache {
 	}
 
 	/** Start caching of the modules locations. */
-	start() {
-		nodeModule._resolveFilename = this.resolveFilenameOptimized;
+	start(): RequireCache {
+		nodeModule._resolveFilename = this.resolveFilenameOptimized.bind(this);
 
 		let cacheFile: CacheFile;
 
 		try {
 			cacheFile = readJsonSync(this.OPTIONS.cacheFilePath) as CacheFile;
 		} catch (error) {
-			return;
+			return this;
 		}
 
 		if (!cacheFile ||
 			(_.isNumber(cacheFile.cacheKiller) && cacheFile.cacheKiller < new Date().getTime()) ||
 			(_.isString(cacheFile.cacheKiller) && cacheFile.cacheKiller !== this.OPTIONS.cacheKiller)) {
-			return;
+			return this;
 		}
 
 		this.filesLookUp = cacheFile.paths;
+		return this;
 	}
 
 	/** Stop caching of the modules locations. */
 	stop() {
-		nodeModule._resolveFilename = resolveFilenameOriginal;
+		nodeModule._resolveFilename = this.resolveFileNameOriginal;
 		this.saveCache();
 	}
 
@@ -69,8 +71,8 @@ export class RequireCache {
 		return this.stats;
 	}
 
-	private resolveFilenameOptimized(path: string, parent: any): string {
-		const key = `${fileSystem.getCanonicalPath(parent.id)}:${path}`;
+	private resolveFilenameOptimized(path: string, parentModule: NodeModule): string {
+		const key = this.getCacheKey(parentModule.id, path);
 		const cachedPath: string | undefined = this.filesLookUp[key];
 
 		if (cachedPath) {
@@ -78,12 +80,20 @@ export class RequireCache {
 			return cachedPath;
 		}
 
-		const filename = resolveFilenameOriginal.apply(nodeModule, arguments);
-		const uncachedPath = fileSystem.getCanonicalPath(filename);
-		this.filesLookUp[key] = uncachedPath;
-		this.stats.cacheMiss++;
-		this.scheduleSaveCache();
-		return uncachedPath;
+		const filename = this.resolveFileNameOriginal.apply(nodeModule, arguments) as string;
+		if (filename.indexOf("node_modules") > -1) {
+			this.filesLookUp[key] = filename;
+			this.scheduleSaveCache();
+			this.stats.cacheMiss++;
+		} else {
+			this.stats.notCached++;
+		}
+
+		return filename;
+	}
+
+	private getCacheKey(filename: string, path: string): string {
+		return `${relative(this.cwd, filename).replace(/\\/g, "/")}:${path}`;
 	}
 
 	private scheduleSaveCache() {
@@ -91,7 +101,7 @@ export class RequireCache {
 			clearTimeout(this.cacheTimerInstance);
 		}
 
-		this.cacheTimerInstance = setTimeout(this.saveCache, 500);
+		this.cacheTimerInstance = setTimeout(this.saveCache.bind(this), 500);
 	}
 
 	private saveCache() {
@@ -102,11 +112,11 @@ export class RequireCache {
 
 		const { cacheHit, cacheMiss } = this.getStats();
 
-		logger.debug(this.saveCache.name,
+		this.logger.debug(this.saveCache.name,
 			`Trying to saving cache, Path: ${this.OPTIONS.cacheFilePath}, cacheHit: ${cacheHit}, cacheMiss: ${cacheMiss}`);
 		ensureFileSync(this.OPTIONS.cacheFilePath);
 		writeJsonSync(this.OPTIONS.cacheFilePath, cacheFile);
-		logger.debug(this.saveCache.name, `Saved cached successfully.`);
+		this.logger.debug(this.saveCache.name, `Saved cached successfully.`);
 	}
 
 }

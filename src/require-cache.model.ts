@@ -29,4 +29,7 @@ export interface CacheStats {
 
 	/** Number of modules who's locations were not found in the cache and were added to the cache. */
 	cacheMiss: number;
+
+	/** Number of modules not to be cached - either not in a node_modules folder or not under process.cwd() */
+	notCached: number;
 }
