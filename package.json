@@ -34,7 +34,7 @@
     "version": "npm run build && npm run changelog",
     "postversion": "git commit --all -m \"chore(all): update for release\" && git push && git push --tags",
     "release": "npm publish",
-    "prebenchmark": "npm up postcss stylelint fs-extra fast-glob yargs shelljs eslint",
+    "prebenchmark": "npm i postcss stylelint fs-extra fast-glob yargs shelljs eslint",
     "benchmark": "npm run build && ts-node ./benchmark"
   },
   "dependencies": {
