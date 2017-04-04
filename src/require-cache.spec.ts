@@ -12,7 +12,6 @@ describe("requireCacheSpec", () => {
 		cacheFilePath: "cache-version.json",
 		cacheKiller: "2.0.0"
 	};
-	const DEFAULT_PKG = "lodash";
 
 	describe("given cache file doesn't exist", () => {
 		it("should fetch files and save to cache", async done => {
@@ -84,7 +83,7 @@ describe("requireCacheSpec", () => {
 		return new Date(`${year}.01.01`).getTime() / 1000;
 	}
 
-	async function runProcess(options: CacheOptions, packageName = DEFAULT_PKG): Promise<CacheStats> {
+	async function runProcess(options: CacheOptions, packageName = "lodash"): Promise<CacheStats> {
 		return await new Promise<CacheStats>((resolve, reject) => {
 			fork(join(__dirname, "require-cache-process.mock"), [
 				packageName,
