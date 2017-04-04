@@ -34,13 +34,12 @@
     "version": "npm run build && npm run changelog",
     "postversion": "git commit --all -m \"chore(all): update for release\" && git push && git push --tags",
     "release": "npm publish",
-    "prebenchmark": "npm i postcss nodegit stylelint fs-extra fast-glob yargs shelljs eslint",
+    "prebenchmark": "npm up postcss stylelint fs-extra fast-glob yargs shelljs eslint",
     "benchmark": "npm run build && ts-node ./benchmark"
   },
   "dependencies": {
     "@speedy/node-core": "^1.0.0",
-    "fs-extra": "^2.1.2",
-    "lodash": "^4.17.4"
+    "fs-extra": "^2.1.2"
   },
   "devDependencies": {
     "@speedy/commit-msg-hook": "^1.3.0",
