@@ -38,7 +38,7 @@ export class RequireCache {
 		this._isEnabled = true;
 		nodeModule._resolveFilename = this.resolveFilenameOptimized.bind(this);
 
-		process.on("exit", () => this.save());
+		process.once("exit", () => this.save());
 
 		let cacheFile: CacheFile;
 
