@@ -13,14 +13,15 @@ export class RequireCache {
 	private cwd = process.cwd();
 	private filesLookUp: Dictionary<string> = {};
 	private cacheTimerInstance: NodeJS.Timer;
-	private stats: CacheStats = {
-		cacheHit: 0,
-		cacheMiss: 0,
-		notCached: 0
-	};
 	private OPTIONS: CacheOptions = {
 		cacheKiller: packageJson.getVersion(),
 		cacheFilePath: resolve("./.cache/speedy-require-cache.json")
+	};
+	private _isEnabled = false;
+	private _stats: CacheStats = {
+		cacheHit: 0,
+		cacheMiss: 0,
+		notCached: 0
 	};
 
 	constructor(
@@ -29,8 +30,13 @@ export class RequireCache {
 		this.OPTIONS = { ...this.OPTIONS, ...options };
 	}
 
-	/** Start caching of the modules locations. */
+	/**
+	 * Start caching of the modules locations
+	 *
+	 * @returns {RequireCache}
+	 */
 	start(): RequireCache {
+		this._isEnabled = true;
 		nodeModule._resolveFilename = this.resolveFilenameOptimized.bind(this);
 
 		let cacheFile: CacheFile;
@@ -53,6 +59,7 @@ export class RequireCache {
 
 	/** Stop caching of the modules locations. */
 	stop() {
+		this._isEnabled = false;
 		nodeModule._resolveFilename = this.resolveFileNameOriginal;
 		this.saveCache();
 	}
@@ -63,12 +70,23 @@ export class RequireCache {
 	}
 
 	/**
-	 * Get a statistics object about the caching effectiveness.
+	 * Whether or not the cache is currently enabled.
 	 *
-	 * @returns {CacheStats}
+	 * @readonly
+	 * @type {boolean}
 	 */
-	getStats(): CacheStats {
-		return this.stats;
+	get isEnabled(): boolean {
+		return this._isEnabled;
+	}
+
+	/**
+	 * Statistics about the caching effectiveness.
+	 *
+	 * @readonly
+	 * @type {CacheStats}
+	 */
+	get stats(): CacheStats {
+		return this._stats;
 	}
 
 	private resolveFilenameOptimized(path: string, parentModule: NodeModule): string {
@@ -76,7 +94,7 @@ export class RequireCache {
 		const cachedPath: string | undefined = this.filesLookUp[key];
 
 		if (cachedPath) {
-			this.stats.cacheHit++;
+			this._stats.cacheHit++;
 			return cachedPath;
 		}
 
@@ -84,9 +102,9 @@ export class RequireCache {
 		if (filename.indexOf("node_modules") > -1) {
 			this.filesLookUp[key] = filename;
 			this.scheduleSaveCache();
-			this.stats.cacheMiss++;
+			this._stats.cacheMiss++;
 		} else {
-			this.stats.notCached++;
+			this._stats.notCached++;
 		}
 
 		return filename;
@@ -110,7 +128,7 @@ export class RequireCache {
 			paths: this.filesLookUp
 		};
 
-		const { cacheHit, cacheMiss } = this.getStats();
+		const { cacheHit, cacheMiss } = this._stats;
 
 		this.logger.debug(this.saveCache.name,
 			`Trying to saving cache, Path: ${this.OPTIONS.cacheFilePath}, cacheHit: ${cacheHit}, cacheMiss: ${cacheMiss}`);
