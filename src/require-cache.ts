@@ -101,7 +101,7 @@ export class RequireCache {
 			clearTimeout(this.cacheTimerInstance);
 		}
 
-		this.cacheTimerInstance = setTimeout(this.saveCache.bind(this), 500);
+		this.cacheTimerInstance = setTimeout(this.saveCache.bind(this), 1000);
 	}
 
 	private saveCache() {
