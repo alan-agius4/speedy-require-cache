@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import * as nodeModule from "module";
 import { resolve, relative } from "path";
 import { readJsonSync, writeJsonSync, ensureFileSync, removeSync } from "fs-extra";
@@ -39,6 +38,8 @@ export class RequireCache {
 		this._isEnabled = true;
 		nodeModule._resolveFilename = this.resolveFilenameOptimized.bind(this);
 
+		process.on("exit", () => this.save());
+
 		let cacheFile: CacheFile;
 
 		try {
@@ -47,9 +48,11 @@ export class RequireCache {
 			return this;
 		}
 
+		const isKillerTimestamp = cacheFile.cacheKiller.toString().indexOf(".") === -1;
+
 		if (!cacheFile ||
-			(_.isNumber(cacheFile.cacheKiller) && cacheFile.cacheKiller < new Date().getTime()) ||
-			(_.isString(cacheFile.cacheKiller) && cacheFile.cacheKiller !== this.OPTIONS.cacheKiller)) {
+			(isKillerTimestamp && cacheFile.cacheKiller < new Date().getTime() / 1000) ||
+			(!isKillerTimestamp && cacheFile.cacheKiller !== this.OPTIONS.cacheKiller)) {
 			return this;
 		}
 
@@ -61,12 +64,32 @@ export class RequireCache {
 	stop() {
 		this._isEnabled = false;
 		nodeModule._resolveFilename = this.resolveFileNameOriginal;
-		this.saveCache();
+		this.save();
 	}
 
 	/** Delete the cache file */
 	reset() {
 		removeSync(this.OPTIONS.cacheFilePath);
+	}
+
+	/** Save cached paths to file */
+	save() {
+		if (this.cacheTimerInstance) {
+			clearTimeout(this.cacheTimerInstance);
+		}
+
+		const cacheFile: CacheFile = {
+			cacheKiller: this.OPTIONS.cacheKiller,
+			paths: this.filesLookUp
+		};
+
+		const { cacheHit, cacheMiss } = this._stats;
+
+		this.logger.debug(this.save.name,
+			`Trying to saving cache, Path: ${this.OPTIONS.cacheFilePath}, cacheHit: ${cacheHit}, cacheMiss: ${cacheMiss}`);
+		ensureFileSync(this.OPTIONS.cacheFilePath);
+		writeJsonSync(this.OPTIONS.cacheFilePath, cacheFile);
+		this.logger.debug(this.save.name, `Saved cached successfully.`);
 	}
 
 	/**
@@ -119,22 +142,7 @@ export class RequireCache {
 			clearTimeout(this.cacheTimerInstance);
 		}
 
-		this.cacheTimerInstance = setTimeout(this.saveCache.bind(this), 1000);
-	}
-
-	private saveCache() {
-		const cacheFile: CacheFile = {
-			cacheKiller: this.OPTIONS.cacheKiller,
-			paths: this.filesLookUp
-		};
-
-		const { cacheHit, cacheMiss } = this._stats;
-
-		this.logger.debug(this.saveCache.name,
-			`Trying to saving cache, Path: ${this.OPTIONS.cacheFilePath}, cacheHit: ${cacheHit}, cacheMiss: ${cacheMiss}`);
-		ensureFileSync(this.OPTIONS.cacheFilePath);
-		writeJsonSync(this.OPTIONS.cacheFilePath, cacheFile);
-		this.logger.debug(this.saveCache.name, `Saved cached successfully.`);
+		this.cacheTimerInstance = setTimeout(() => this.save(), 1000);
 	}
 
 }
