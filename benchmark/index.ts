@@ -7,13 +7,13 @@ async function benchmark(pkg: string): Promise<void> {
 
 	const cachedTime = await new Promise<number>(resolve => {
 		fork("./benchmark/benchmark", [pkg, "cached"])
-			.on("message", (time: number) => resolve(time))
+			.on("message", resolve)
 			.on("error", error => logger.error("", error));
 	});
 
 	const unCachedTime = await new Promise<number>(resolve => {
 		fork("./benchmark/benchmark", [pkg, "uncached"])
-			.on("message", (time: number) => resolve(time))
+			.on("message", resolve)
 			.on("error", error => logger.error("", error));
 	});
 
