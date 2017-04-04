@@ -1,49 +1,40 @@
-import { RequireCache } from "../dist/require-cache";
+import { fork } from "child_process";
+import { Logger } from "@speedy/node-core";
 
-// const NUMBER_OF_ITERATIONS = 1;
+(new Logger("Benchmark")).warn("On first run, cache won't be filled yet!, Run it 2x to fully utilize the cache.");
+async function benchmark(pkg: string): Promise<void> {
+	const logger = new Logger(pkg);
 
-function benchmarkCached(pkg: string) {
-	const timeKey = `Cached: ${pkg}`;
-	const cache = new RequireCache().start();
-	console.time(timeKey);
+	const cachedTime = await new Promise<number>(resolve => {
+		fork("./benchmark/benchmark", [pkg, "cached"])
+			.on("message", (time: number) => resolve(time))
+			.on("error", error => logger.error("", error));
+	});
 
-	// for (let i = 1; i <= NUMBER_OF_ITERATIONS; i++) {
-		let lib = require(pkg);
-		lib = undefined;
-	// }
+	const unCachedTime = await new Promise<number>(resolve => {
+		fork("./benchmark/benchmark", [pkg, "uncached"])
+			.on("message", (time: number) => resolve(time))
+			.on("error", error => logger.error("", error));
+	});
 
-	console.timeEnd(timeKey);
-	// console.log(timeKey, "stats", cache.getStats());
-	cache.stop();
+	logger.info(`Uncached: ${unCachedTime.toFixed(3)} ms`);
+	logger.info(`Cached: ${cachedTime.toFixed(3)} ms`);
+	logger.info(`Efficient: ${(100 - (cachedTime / unCachedTime * 100)).toFixed(3)} %`);
+	logger.info(`Difference: ${-(unCachedTime - cachedTime).toFixed(3)} ms`);
+
+	console.log("\n");
 }
 
-// function benchmarkUncached(pkg: string) {
-// 	const timeKey = `Uncached: ${pkg}`;
-// 	console.time(timeKey);
+async function run() {
+	console.log("\n");
+	await benchmark("tslint");
+	await benchmark("nodegit");
+	await benchmark("fs-extra");
+	await benchmark("shelljs");
+	await benchmark("stylelint");
+	await benchmark("postcss");
+	await benchmark("yargs");
+	await benchmark("eslint");
+}
 
-// 	// for (let i = 1; i <= NUMBER_OF_ITERATIONS; i++) {
-// 		let lib = require(pkg);
-// 		lib = undefined;
-// 	// }
-
-// 	console.timeEnd(timeKey);
-// }
-
-//benchmarkUncached("@speedy/node-core");
-// benchmarkCached("@speedy/node-core");
-// console.log("--------------------------");
-// benchmarkUncached("tslint");
-// benchmarkCached("tslint");
-// console.log("--------------------------");
-// benchmarkUncached("fs-extra");
-// benchmarkCached("fs-extra");
-// console.log("--------------------------");
-// benchmarkUncached("typescript");
-// benchmarkCached("typescript");
-// console.log("--------------------------");
-// benchmarkUncached("nodegit");
-benchmarkCached("nodegit");
-// console.log("--------------------------");
-
-// require("tslint");
-// require("fs-extra");
+run();
