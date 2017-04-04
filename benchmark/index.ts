@@ -28,7 +28,6 @@ async function benchmark(pkg: string): Promise<void> {
 async function run() {
 	console.log("\n");
 	await benchmark("tslint");
-	await benchmark("nodegit");
 	await benchmark("fs-extra");
 	await benchmark("shelljs");
 	await benchmark("stylelint");

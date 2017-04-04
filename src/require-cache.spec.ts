@@ -1,11 +1,9 @@
-// import { RequireCache } from "./require-cache";
-import { CacheStats, CacheOptions } from "./require-cache.model";
-
 import { fork } from "child_process";
 import { join } from "path";
 
-describe("requireCacheSpec", () => {
+import { CacheStats, CacheOptions } from "./require-cache.model";
 
+describe("requireCacheSpec", () => {
 	const TIMESTAMP_OPTIONS: CacheOptions = {
 		cacheFilePath: "cache-timestamp.json",
 		cacheKiller: getUnixTimestamp(2020)
