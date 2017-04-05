@@ -95,7 +95,7 @@ export class RequireCache {
 	/** Saves cached paths to file. */
 	save() {
 		if (!this.isCacheModified) {
-			this.logger.debug(this.save.name, "Save exited. Cache has not been modified.");
+			this.logger.debug(this.save.name, "Save exited. Cache has not been modified");
 			return;
 		}
 
