@@ -21,6 +21,9 @@ export interface CacheOptions {
 
 	/** Alternate cache file location. Default: `./.cache/speedy-require-cache.json` */
 	cacheFilePath: string;
+
+	/** When in `ReadOnly` mode. Any changes will be discharged once process is terminated. Default: `false` */
+	readOnlyMode: Boolean;
 }
 
 export interface CacheStats {

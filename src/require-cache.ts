@@ -28,6 +28,7 @@ export class RequireCache {
 	private cwd = process.cwd();
 	private filesLookUp: Dictionary<string> = {};
 	private OPTIONS: CacheOptions = {
+		readOnlyMode: false,
 		cacheKiller: packageJson.getVersion(),
 		cacheFilePath: resolve("./.cache/speedy-require-cache.json")
 	};
@@ -95,6 +96,11 @@ export class RequireCache {
 	save() {
 		if (!this.isCacheModified) {
 			this.logger.debug(this.save.name, "WIll not save to cache. It has not been modified.");
+			return;
+		}
+
+		if (this.OPTIONS.readOnlyMode) {
+			this.logger.debug(this.save.name, "WIll not save to cache. Cache is in 'ReadOnly' mode");
 			return;
 		}
 
