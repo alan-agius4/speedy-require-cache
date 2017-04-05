@@ -8,6 +8,7 @@ node_modules
 /tsconfig.json
 /tslint.json
 /.cache
+/benchmark
 
 .npmignore
 .editorconfig
