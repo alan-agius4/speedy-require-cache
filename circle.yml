@@ -8,6 +8,6 @@ compile:
     - npm run build
 test:
   override:
-    - npm run bechmark-install
-    - npm run bechmark
-    - npm run bechmark
+    - npm run benchmark-install
+    - npm run benchmark
+    - npm run benchmark
