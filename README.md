@@ -4,12 +4,13 @@
 [![Dependency Status](https://img.shields.io/david/alan-agius4/speedy-require-cache.svg?style=flat-square)](https://david-dm.org/alan-agius4/speedy-require-cache)
 [![devDependency Status](https://img.shields.io/david/dev/alan-agius4/speedy-require-cache.svg?style=flat-square)](https://david-dm.org/alan-agius4/speedy-require-cache?type=dev)
 
-Speed up Node load time by caching resolved module paths to avoid Node refetching
-and resolving the modules each time the application is loaded.
+Speed up Node load time by caching resolved module paths to avoid module resolution and refetching each time the application is loaded.
 
-The first time the application loads, a cache of resolved file paths is saved in the file system.
+The first time the application loads, resolved file paths are saved in the file system.
 
-This modules patches the `_resolveFilename` method of Node `module`, caching the files it finds in order to improve node loading performance.
+This modules patches the `_resolveFilename` method of Node `module`, caching the files it finds in order to improve Node loading performance.
+
+This is inspired by [fast-boot](https://www.npmjs.com/package/fast-boot).
 
 ## Getting Started
 
@@ -49,15 +50,15 @@ import * as _ from "lodash";
 #### CacheOptions
 | Name          | Description                                                                                                                                                                                                                                                                                                 | Type                |
 |---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
-| cacheKiller   | Used to invalidate the cache. By default it's set the version of `package.json`.<br><br>Normally one will pass the application version number assuming that a different version or a Unix timestamp when the cache should expire.<br><br>string: 'package.json'<br>version: `1.0.0` number: Unix timestamp: `1490873027` | `number` | `string` |
+| cacheKiller   | Used to invalidate the cache. By default it's set the version of `package.json`.<br><br>Normally one will pass the application version number assuming that a different version or a Unix timestamp when the cache should expire.<br><br>string: 'package.json' version: `1.0.0`<br>number: Unix timestamp: `1490873027` | `number` | `string` |
 | cacheFilePath | Alternate cache file location. Default: `./.cache/speedy-require-cache.json`                                                                                                                                                                                                                                | `string`            |
 
 #### CacheStats
 | Name      | Description                                                                                         | Type     |
 |-----------|-----------------------------------------------------------------------------------------------------|----------|
-| cacheHit  | Number of modules which locations were found in the cache                                           | `number` |
-| cacheMiss | Number of modules which locations were not found in the cache and were added to the cache           | `number` |
-| notCached | Number of modules not to be cached - either not in a node_modules folder or not under process.cwd() | `number` |
+| cacheHit  | Number of modules who's locations were found in the cache                                           | `number` |
+| cacheMiss | Number of modules who's locations were not found in the cache and were added to the cache           | `number` |
+| notCached | Number of modules not to be cached - either not in a node_modules folder or process.cwd()           | `number` |
 
 ### Methods and Properties
 
@@ -70,24 +71,24 @@ Whether or not the cache is currently enabled.
 **Read only**: true
 
 #### requireCache.stats : <code>CacheStats</code>
-Statistics about the caching effectiveness.
+Caching effectiveness statistics.
 
 **Read only**: true
 
-Start caching of  module locations.
+Start caching of module locations.
 
 #### requireCache.stop()
 Stop caching of the modules locations.
 
 #### requireCache.reset()
-Delete the cache file.
+Deletes the cache file.
 
 #### requireCache.save()
-Save cached paths to file.
+Saves cached paths to file.
 
 ## Benchmark Yourself
 
-If you'd like to run the benchmark yourself. Clone the Git repository, and install all the dependencies executing the following commands in your terminal:
+If you'd like to run the benchmark yourself. Clone the Git repository and install all the dependencies executing the following commands in your terminal:
 
 ```
 npm install

@@ -24,12 +24,12 @@ export interface CacheOptions {
 }
 
 export interface CacheStats {
-	/** Number of modules which locations were found in the cache. */
+	/** Number of modules who's locations were found in the cache. */
 	cacheHit: number;
 
-	/** Number of modules which locations were not found in the cache and were added to the cache. */
+	/** Number of modules who's locations were not found in the cache and were added to the cache. */
 	cacheMiss: number;
 
-	/** Number of modules not to be cached - either not in a node_modules folder or not under process.cwd() */
+	/** Number of modules not to be cached - either not in a node_modules folder or process.cwd() */
 	notCached: number;
 }

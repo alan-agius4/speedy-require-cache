@@ -86,12 +86,12 @@ export class RequireCache {
 		this.save();
 	}
 
-	/** Delete the cache file. */
+	/** Deletes the cache file. */
 	reset() {
 		removeSync(this.OPTIONS.cacheFilePath);
 	}
 
-	/** Save cached paths to file. */
+	/** Saves cached paths to file. */
 	save() {
 		if (this.cacheTimerInstance) {
 			clearTimeout(this.cacheTimerInstance);
@@ -122,7 +122,7 @@ export class RequireCache {
 	}
 
 	/**
-	 * Statistics about the caching effectiveness.
+	 * Caching effectiveness statistics.
 	 *
 	 * @readonly
 	 * @type {CacheStats}
