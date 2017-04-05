@@ -9,12 +9,11 @@
   },
   "keywords": [
     "node",
-    "utils",
-    "core",
-    "filesystem",
-    "config",
-    "logger",
-    "timer"
+    "require",
+    "cache",
+    "modules",
+    "fast",
+    "boot"
   ],
   "author": "Alan Agius",
   "license": "ISC",
