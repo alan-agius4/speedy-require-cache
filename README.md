@@ -58,7 +58,7 @@ import * as _ from "lodash";
 |-----------|-----------------------------------------------------------------------------------------------------|----------|
 | cacheHit  | Number of modules who's locations were found in the cache                                           | `number` |
 | cacheMiss | Number of modules who's locations were not found in the cache and were added to the cache           | `number` |
-| notCached | Number of modules not to be cached - either not in a node_modules folder or process.cwd()           | `number` |
+| notCached | Number of modules not to be cached - either not in `node_modules` folder or `process.cwd()`         | `number` |
 
 ### Methods and Properties
 
