@@ -12,8 +12,10 @@
     "require",
     "cache",
     "modules",
+    "module",
     "fast",
-    "boot"
+    "boot",
+    "performance"
   ],
   "author": "Alan Agius",
   "license": "ISC",
