@@ -1,7 +1,7 @@
 {
   "name": "@speedy/require-cache",
   "version": "1.0.0",
-  "description": "Speed up Node by caching the location of modules and files.",
+  "description": "Speed up Node load time by caching resolved module paths to avoid module resolution and refetching each time the application is loaded.",
   "main": "./dist/index.js",
   "repository": {
     "type": "git",
