@@ -12,15 +12,7 @@ This modules patches the `_resolveFilename` method of Node `module`, caching the
 
 This is inspired by [fast-boot](https://www.npmjs.com/package/fast-boot).
 
-## Getting Started
-
-### Installation
-
-```
-npm install @speedy/require-cache --save
-```
-
-### Benchmark results
+***Benchmark results***
 
 | Library   | Uncached    | Cached     | Efficient | Duration    |
 |-----------|-------------|------------|-----------|-------------|
@@ -34,6 +26,13 @@ npm install @speedy/require-cache --save
 
 Benchmark mark done on a `Windows 7 64 Bit`, `i7-5500U CPU @ 2.40Ghz` and `16GB RAM`.
 
+## Getting Started
+
+### Installation
+
+```
+npm install @speedy/require-cache --save
+```
 
 ### Usage
 
