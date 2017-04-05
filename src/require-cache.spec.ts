@@ -6,15 +6,18 @@ import { CacheStats, CacheOptions } from "./require-cache.model";
 describe("requireCacheSpec", () => {
 	const INVALID_TIMESTAMP_OPTIONS: CacheOptions = {
 		cacheFilePath: "cache-timestamp-invalid.json",
-		cacheKiller: getUnixTimestamp(1980)
+		cacheKiller: getUnixTimestamp(1980),
+		readOnlyMode: false
 	};
 	const TIMESTAMP_OPTIONS: CacheOptions = {
 		cacheFilePath: "cache-timestamp.json",
-		cacheKiller: getUnixTimestamp(2020)
+		cacheKiller: getUnixTimestamp(2020),
+		readOnlyMode: false
 	};
 	const VERSION_OPTIONS: CacheOptions = {
 		cacheFilePath: "cache-version.json",
-		cacheKiller: "2.0.0"
+		cacheKiller: "2.0.0",
+		readOnlyMode: false
 	};
 
 	describe("given cache file doesn't exist", () => {
