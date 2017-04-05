@@ -27,9 +27,9 @@ export class RequireCache {
 	private resolveFileNameOriginal = nodeModule._resolveFilename;
 	private cwd = process.cwd();
 	private filesLookUp: Dictionary<string> = {};
-	private OPTIONS: CacheOptions = {
+	private _options: CacheOptions = {
 		readOnlyMode: false,
-		cacheKiller: packageJson.getVersion(),
+		cacheKiller: 0,
 		cacheFilePath: resolve("./.cache/speedy-require-cache.json")
 	};
 	private _isEnabled = false;
@@ -46,7 +46,11 @@ export class RequireCache {
 	constructor(
 		options?: Partial<CacheOptions>
 	) {
-		this.OPTIONS = { ...this.OPTIONS, ...options };
+		if (!options || !options.cacheKiller) {
+			this._options.cacheKiller = packageJson.getVersion();
+		}
+
+		this._options = { ...this._options, ...options };
 	}
 
 	/**
@@ -63,7 +67,7 @@ export class RequireCache {
 		let cacheFile: CacheFile;
 
 		try {
-			cacheFile = readJsonSync(this.OPTIONS.cacheFilePath) as CacheFile;
+			cacheFile = readJsonSync(this._options.cacheFilePath) as CacheFile;
 		} catch (error) {
 			return this;
 		}
@@ -72,7 +76,7 @@ export class RequireCache {
 
 		if (!cacheFile ||
 			(isKillerTimestamp && cacheFile.cacheKiller < new Date().getTime() / 1000) ||
-			(!isKillerTimestamp && cacheFile.cacheKiller !== this.OPTIONS.cacheKiller)) {
+			(!isKillerTimestamp && cacheFile.cacheKiller !== this._options.cacheKiller)) {
 			return this;
 		}
 
@@ -89,7 +93,7 @@ export class RequireCache {
 
 	/** Deletes the cache file. */
 	reset() {
-		removeSync(this.OPTIONS.cacheFilePath);
+		removeSync(this._options.cacheFilePath);
 	}
 
 	/** Saves cached paths to file. */
@@ -99,22 +103,22 @@ export class RequireCache {
 			return;
 		}
 
-		if (this.OPTIONS.readOnlyMode) {
+		if (this._options.readOnlyMode) {
 			this.logger.debug(this.save.name, "Save exited. Cache is in 'ReadOnly' mode");
 			return;
 		}
 
 		const cacheFile: CacheFile = {
-			cacheKiller: this.OPTIONS.cacheKiller,
+			cacheKiller: this._options.cacheKiller,
 			paths: this.filesLookUp
 		};
 
 		const { cacheHit, cacheMiss } = this._stats;
 
 		this.logger.debug(this.save.name,
-			`Trying to saving cache, Path: ${this.OPTIONS.cacheFilePath}, cacheHit: ${cacheHit}, cacheMiss: ${cacheMiss}`);
-		ensureFileSync(this.OPTIONS.cacheFilePath);
-		writeJsonSync(this.OPTIONS.cacheFilePath, cacheFile);
+			`Trying to saving cache, Path: ${this._options.cacheFilePath}, cacheHit: ${cacheHit}, cacheMiss: ${cacheMiss}`);
+		ensureFileSync(this._options.cacheFilePath);
+		writeJsonSync(this._options.cacheFilePath, cacheFile);
 		this.logger.debug(this.save.name, `Saved cached successfully.`);
 	}
 
