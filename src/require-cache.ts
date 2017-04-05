@@ -22,11 +22,11 @@ import { CacheOptions, CacheFile, CacheStats } from "./require-cache.model";
  */
 export class RequireCache {
 
+	private isCacheModified = false;
 	private logger = new Logger("Require Cache");
 	private resolveFileNameOriginal = nodeModule._resolveFilename;
 	private cwd = process.cwd();
 	private filesLookUp: Dictionary<string> = {};
-	private cacheTimerInstance: NodeJS.Timer;
 	private OPTIONS: CacheOptions = {
 		cacheKiller: packageJson.getVersion(),
 		cacheFilePath: resolve("./.cache/speedy-require-cache.json")
@@ -93,8 +93,9 @@ export class RequireCache {
 
 	/** Saves cached paths to file. */
 	save() {
-		if (this.cacheTimerInstance) {
-			clearTimeout(this.cacheTimerInstance);
+		if (!this.isCacheModified) {
+			this.logger.debug(this.save.name, "WIll not save to cache. It has not been modified.");
+			return;
 		}
 
 		const cacheFile: CacheFile = {
@@ -143,8 +144,8 @@ export class RequireCache {
 		const filename = this.resolveFileNameOriginal.apply(nodeModule, arguments) as string;
 		if (filename.indexOf("node_modules") > -1) {
 			this.filesLookUp[key] = filename;
-			this.scheduleSaveCache();
 			this._stats.cacheMiss++;
+			this.isCacheModified = true;
 		} else {
 			this._stats.notCached++;
 		}
@@ -154,14 +155,6 @@ export class RequireCache {
 
 	private getCacheKey(path: string, filename: string): string {
 		return join(path, filename).replace(this.cwd, "").replace(/\\/g, "/");
-	}
-
-	private scheduleSaveCache() {
-		if (this.cacheTimerInstance) {
-			clearTimeout(this.cacheTimerInstance);
-		}
-
-		this.cacheTimerInstance = setTimeout(() => this.save(), 5000);
 	}
 
 }
