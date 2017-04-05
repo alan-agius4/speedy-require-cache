@@ -95,12 +95,12 @@ export class RequireCache {
 	/** Saves cached paths to file. */
 	save() {
 		if (!this.isCacheModified) {
-			this.logger.debug(this.save.name, "WIll not save to cache. It has not been modified.");
+			this.logger.debug(this.save.name, "Save exited. Cache has not been modified.");
 			return;
 		}
 
 		if (this.OPTIONS.readOnlyMode) {
-			this.logger.debug(this.save.name, "WIll not save to cache. Cache is in 'ReadOnly' mode");
+			this.logger.debug(this.save.name, "Save exited. Cache is in 'ReadOnly' mode");
 			return;
 		}
 
