@@ -91,10 +91,10 @@ If you'd like to run the benchmark yourself. Clone the Git repository and instal
 
 ```
 npm install
-npm benchmark-install
+npm run benchmark-install
 ```
 
 To benchmark run:
 ```
-npm benchmark
+npm run benchmark
 ```
