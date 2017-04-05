@@ -51,6 +51,7 @@ import * as _ from "lodash";
 |---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
 | cacheKiller   | Used to invalidate the cache. By default it's set the version of `package.json`.<br><br>Normally one will pass the application version number assuming that a different version or a Unix timestamp when the cache should expire.<br><br>string: 'package.json' version: `1.0.0`<br>number: Unix timestamp: `1490873027` | `number` | `string` |
 | cacheFilePath | Alternate cache file location. Default: `./.cache/speedy-require-cache.json`                                                                                                                                                                                                                                | `string`            |
+ readOnlyMode   | When in `ReadOnly` mode. Any changes will be discharged once process is terminated. Default: `false`                                                                                                                                                                                                        | `boolean`          |
 
 #### CacheStats
 | Name      | Description                                                                                         | Type     |
