@@ -1,10 +1,25 @@
 import * as nodeModule from "module";
-import { resolve, relative } from "path";
+import { resolve, join } from "path";
 import { readJsonSync, writeJsonSync, ensureFileSync, removeSync } from "fs-extra";
 import { Dictionary, Logger, packageJson } from "@speedy/node-core";
 
 import { CacheOptions, CacheFile, CacheStats } from "./require-cache.model";
 
+/**
+ * Speed up Node load time by caching resolved module paths to avoid Node refetching
+ * and resolving the modules each time the application is loaded.
+ *
+ * The first time the application loads, a cache of resolved file paths is saved in the file system.
+ *
+ * @example
+ * import { RequireCache } from "@speedy/require-cache";
+ * new RequireCache().start();
+ *
+ * import * as stylelint from "stylelint";
+ * import * as _ from "lodash";
+ *
+ * @class RequireCache
+ */
 export class RequireCache {
 
 	private logger = new Logger("Require Cache");
@@ -23,6 +38,10 @@ export class RequireCache {
 		notCached: 0
 	};
 
+	/**
+	 * Creates an instance of RequireCache.
+	 * @param {Partial<CacheOptions>} [options]
+	 */
 	constructor(
 		options?: Partial<CacheOptions>
 	) {
@@ -30,7 +49,7 @@ export class RequireCache {
 	}
 
 	/**
-	 * Start caching of the modules locations
+	 * Start caching of module locations.
 	 *
 	 * @returns {RequireCache}
 	 */
@@ -67,12 +86,12 @@ export class RequireCache {
 		this.save();
 	}
 
-	/** Delete the cache file */
+	/** Delete the cache file. */
 	reset() {
 		removeSync(this.OPTIONS.cacheFilePath);
 	}
 
-	/** Save cached paths to file */
+	/** Save cached paths to file. */
 	save() {
 		if (this.cacheTimerInstance) {
 			clearTimeout(this.cacheTimerInstance);
@@ -133,8 +152,8 @@ export class RequireCache {
 		return filename;
 	}
 
-	private getCacheKey(filename: string, path: string): string {
-		return `${relative(this.cwd, filename).replace(/\\/g, "/")}:${path}`;
+	private getCacheKey(path: string, filename: string): string {
+		return join(path, filename).replace(this.cwd, "").replace(/\\/g, "/");
 	}
 
 	private scheduleSaveCache() {
@@ -142,7 +161,7 @@ export class RequireCache {
 			clearTimeout(this.cacheTimerInstance);
 		}
 
-		this.cacheTimerInstance = setTimeout(() => this.save(), 1000);
+		this.cacheTimerInstance = setTimeout(() => this.save(), 5000);
 	}
 
 }
