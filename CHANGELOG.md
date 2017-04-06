@@ -1,3 +1,19 @@
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/alan-agius4/speedy-require-cache/compare/v1.0.0...v1.1.0) (2017-04-06)
+
+
+### Features
+
+* **require cache:** add `readOnlyMode` to cache options ([6be5364](https://github.com/alan-agius4/speedy-require-cache/commit/6be5364))
+
+
+### Performance Improvements
+
+* **require cache:** only fetch version when `cacheKiller` is empty ([3c4fb91](https://github.com/alan-agius4/speedy-require-cache/commit/3c4fb91))
+* **require cache:** save to cache only when cache has been modified ([52d4446](https://github.com/alan-agius4/speedy-require-cache/commit/52d4446))
+
+
+
 <a name="1.0.0"></a>
 # 1.0.0 (2017-04-05)
 
