@@ -1,7 +1,7 @@
 import * as nodeModule from "module";
 import { resolve, join } from "path";
 import { readJsonSync, writeJsonSync, ensureFileSync, removeSync } from "fs-extra";
-import { Dictionary, Logger, packageJson } from "@speedy/node-core";
+import { Dictionary, Logger, packageMeta } from "@speedy/node-core";
 
 import { CacheOptions, CacheFile, CacheStats } from "./require-cache.model";
 
@@ -47,7 +47,7 @@ export class RequireCache {
 		options?: Partial<CacheOptions>
 	) {
 		if (!options || !options.cacheKiller) {
-			this._options.cacheKiller = packageJson.getVersion();
+			this._options.cacheKiller = packageMeta.getVersion();
 		}
 
 		this._options = { ...this._options, ...options };

@@ -39,7 +39,7 @@
     "benchmark": "npm run build && ts-node ./benchmark"
   },
   "dependencies": {
-    "@speedy/node-core": "^1.0.0",
+    "@speedy/node-core": "^1.1.0",
     "fs-extra": "^2.1.2"
   },
   "devDependencies": {
