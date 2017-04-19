@@ -1,3 +1,13 @@
+<a name="1.1.2"></a>
+## [1.1.2](https://github.com/alan-agius4/speedy-require-cache/compare/v1.1.1...v1.1.2) (2017-04-19)
+
+
+### Bug Fixes
+
+* **require cache:** fix key collisions ([c876b79](https://github.com/alan-agius4/speedy-require-cache/commit/c876b79))
+
+
+
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/alan-agius4/speedy-require-cache/compare/v1.1.0...v1.1.1) (2017-04-07)
 
