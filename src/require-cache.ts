@@ -1,9 +1,11 @@
 import * as nodeModule from "module";
-import { resolve, join } from "path";
+import { resolve, relative, sep } from "path";
 import { readJsonSync, writeJsonSync, ensureFileSync, removeSync } from "fs-extra";
 import { Dictionary, Logger, packageMeta } from "@speedy/node-core";
 
 import { CacheOptions, CacheFile, CacheStats } from "./require-cache.model";
+
+const MODULES_PATH = `node_modules${sep}`;
 
 /**
  * Speed up Node load time by caching resolved module paths to avoid Node refetching
@@ -21,7 +23,6 @@ import { CacheOptions, CacheFile, CacheStats } from "./require-cache.model";
  * @class RequireCache
  */
 export class RequireCache {
-
 	private isCacheModified = false;
 	private logger = new Logger("Require Cache");
 	private resolveFileNameOriginal = nodeModule._resolveFilename;
@@ -164,7 +165,7 @@ export class RequireCache {
 	}
 
 	private getCacheKey(path: string, filename: string): string {
-		return join(path, filename).replace(this.cwd, "").replace(/\\/g, "/");
+		return `${relative(this.cwd, path).replace(MODULES_PATH, "").replace(/\\/g, "/")}:${filename}`;
 	}
 
 }
