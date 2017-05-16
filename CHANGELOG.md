@@ -1,3 +1,8 @@
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/alan-agius4/speedy-require-cache/compare/v1.1.2...v1.2.0) (2017-05-16)
+
+
+
 <a name="1.1.2"></a>
 ## [1.1.2](https://github.com/alan-agius4/speedy-require-cache/compare/v1.1.1...v1.1.2) (2017-04-19)
 
