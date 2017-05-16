@@ -23,7 +23,7 @@ export interface CacheOptions {
 	cacheFilePath: string;
 
 	/** When in `ReadOnly` mode. Any changes will be discharged once process is terminated. Default: `false` */
-	readOnlyMode: Boolean;
+	readOnlyMode: boolean;
 }
 
 export interface CacheStats {
