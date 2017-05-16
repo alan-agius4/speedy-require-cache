@@ -52,7 +52,7 @@
     "rimraf": "^2.6.0",
     "ts-node": "^3.0.2",
     "tslint": "^5.0.0",
-    "typescript": "^2.2.1"
+    "typescript": "^2.3.0"
   },
   "typings": "dist/index.d.ts"
 }
